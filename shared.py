@@ -1,9 +1,14 @@
+import logging
+
 import dash_bootstrap_components as dbc
 from dash import html, dcc
 
 from data import accidents_df
 
+logger = logging.Logger(__name__)
+
 regions = accidents_df['region'].unique()
+logger.info('loaded unique regions')
 
 region_filter = dbc.Row([
     dbc.Col([
@@ -16,9 +21,11 @@ region_filter = dbc.Row([
             options=[{'label': i, 'value': i} for i in regions],
             value=[regions[0]],
             multi=True,
+            searchable=True,
         ),
     ], width=3),
 ])
+
 
 def header(title: str):
     return dbc.Row([
@@ -30,6 +37,7 @@ def header(title: str):
         ]),
     ])
 
+
 def graph(title: str, description: str, *args):
     return dbc.Stack([
         html.Div([
@@ -37,4 +45,4 @@ def graph(title: str, description: str, *args):
             html.Small(description),
         ]),
         dbc.Row(args),
-    ], gap=8)
+    ], gap=8, style={'margin': '16px 0'})

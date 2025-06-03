@@ -1,7 +1,11 @@
+import logging
+
 import dash_bootstrap_components as dbc
 from dash import Dash, html, dcc, Output, Input
 
-from pages import main, location, participants, conditions, vehicles
+from pages import main, participants, conditions, vehicles
+
+logging.basicConfig(level=logging.INFO)
 
 external_stylesheets = [dbc.themes.YETI]
 app = Dash(__name__, external_stylesheets=external_stylesheets, use_pages=True)
@@ -26,11 +30,10 @@ content_style = {
 sidebar = html.Div([
     html.H2('ДТП', className='display-6'),
     html.Hr(),
-    html.P('На территории РФ с 2015 по 2024 годы', className='lead'),
+    html.P('На территории РФ с 2015 по 2023 годы', className='lead'),
     dbc.Nav(
         [
             dbc.NavLink('Основное', href='/', active='exact'),
-            dbc.NavLink('Местоположение', href='/location', active='exact'),
             dbc.NavLink('Участники', href='/participants', active='exact'),
             dbc.NavLink('Условия', href='/conditions', active='exact'),
             dbc.NavLink('Транспортные средства', href='/vehicles', active='exact'),
@@ -45,7 +48,6 @@ app.layout = html.Div([dcc.Location(id='url'), sidebar, content])
 
 pages = {
     '/': main.layout,
-    '/location': location.layout,
     '/participants': participants.layout,
     '/conditions': conditions.layout,
     '/vehicles': vehicles.layout,

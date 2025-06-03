@@ -1,6 +1,8 @@
 import dash_bootstrap_components as dbc
-from dash import html, dcc
+import plotly.express as px
+from dash import html, dcc, callback, Input, Output
 
+from data import accidents_df
 from shared import header, region_filter, graph
 
 layout = dbc.Container([
@@ -15,21 +17,14 @@ layout = dbc.Container([
                 'При каких погодных условиях чаще всего происходят ДТП?',
                 dcc.Graph(id='weather-conditions'),
             ),
-        ], width=4),
+        ], width=6),
         dbc.Col([
             graph(
                 'Освещённость',
                 'При какой освещённости чаще всего происходят ДТП?',
                 dcc.Graph(id='light-conditions'),
             ),
-        ], width=4),
-        dbc.Col([
-            graph(
-                'Дорожные условия',
-                'При каких дорожных условиях чаще всего происходят ДТП?',
-                dcc.Graph(id='road-conditions'),
-            ),
-        ], width=4),
+        ], width=6),
     ]),
 
     dbc.Row([
@@ -49,3 +44,87 @@ layout = dbc.Container([
         ], width=6),
     ]),
 ])
+
+
+@callback(
+    Output('weather-conditions', 'figure'),
+    Output('light-conditions', 'figure'),
+    Output('day-time', 'figure'),
+    Output('year-season', 'figure'),
+    Input('crossfilter-region', 'value'),
+)
+def update_conditions(region):
+    region_accidents_df = accidents_df[accidents_df['region'].isin(region)]
+
+    weather_figure = px.pie(
+        region_accidents_df
+        .value_counts(subset=['weather'])
+        .reset_index(name='count')
+        .sort_values('count', ascending=False)
+        .head(5),
+
+        values='count',
+        names='weather',
+
+        labels={
+            'weather': 'Погода',
+            'count': 'Количество ДТП',
+        }
+    )
+
+    weather_figure.update_layout(legend={
+        'yanchor': 'top',
+        'y': 0.99,
+        'xanchor': 'right',
+        'x': 0.01,
+    })
+
+    light_figure = px.pie(
+        region_accidents_df
+        .value_counts(subset=['light'])
+        .reset_index(name='count'),
+
+        values='count',
+        names='light',
+
+        labels={
+            'light': 'Освещённость',
+            'count': 'Количество ДТП',
+        }
+    )
+
+    light_figure.update_layout(showlegend=False)
+
+    day_time_figure = px.bar(
+        region_accidents_df
+        .value_counts(subset=['hour'])
+        .reset_index(name='count')
+        .sort_values('hour'),
+
+        x='hour',
+        y='count',
+        orientation='v',
+
+        labels={
+            'hour': 'Час дня',
+            'count': 'Количество ДТП',
+        }
+    )
+
+    months_figure = px.bar(
+        region_accidents_df
+        .value_counts(subset=['month'])
+        .reset_index(name='count')
+        .sort_values('month'),
+
+        x='month',
+        y='count',
+        orientation='v',
+
+        labels={
+            'month': 'Месяц',
+            'count': 'Количество ДТП',
+        }
+    )
+
+    return weather_figure, light_figure, day_time_figure, months_figure
