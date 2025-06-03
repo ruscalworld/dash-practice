@@ -1,0 +1,8 @@
+services:
+  dash:
+    image: ghcr.io/ruscalworld/dash-practice:latest
+    restart: always
+    volumes:
+      - ./data:/home/practice/data
+    ports:
+      - '8050:8050'
