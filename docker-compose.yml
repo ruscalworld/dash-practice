@@ -1,6 +1,6 @@
 services:
   dash:
-    image: ghcr.io/ruscalworld/dash-practice:latest
+    image: ghcr.io/ruscalworld/dash-practice:main
     restart: always
     volumes:
       - ./data:/home/practice/data
