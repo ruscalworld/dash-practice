@@ -9,6 +9,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
