@@ -79,4 +79,4 @@ def render_page_content(pathname):
 
 
 if __name__ == '__main__':
-    app.run(debug=os.getenv('ENVIRONMENT', 'development') != 'production')
+    app.run(debug=os.getenv('ENVIRONMENT', 'development') != 'production', host='0.0.0.0')
