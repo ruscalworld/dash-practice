@@ -14,7 +14,6 @@ app = Dash(
     external_stylesheets=external_stylesheets,
     use_pages=True,
     add_log_handler=False,
-    logger=logging.getLogger(__name__),
 )
 
 app.config.suppress_callback_exceptions = True
