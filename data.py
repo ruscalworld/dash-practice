@@ -5,6 +5,7 @@ import pandas as pd
 
 logger = logging.Logger(__name__)
 
+logger.info('loading data')
 settlements_df = pd.read_csv('data/settlements.csv', sep=',')
 logger.info('loaded settlements data')
 

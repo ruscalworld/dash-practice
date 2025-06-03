@@ -1,14 +1,22 @@
 import logging
+import os
 
 import dash_bootstrap_components as dbc
 from dash import Dash, html, dcc, Output, Input
 
 from pages import main, participants, conditions, vehicles
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 external_stylesheets = [dbc.themes.YETI]
-app = Dash(__name__, external_stylesheets=external_stylesheets, use_pages=True)
+app = Dash(
+    __name__,
+    external_stylesheets=external_stylesheets,
+    use_pages=True,
+    add_log_handler=False,
+    logger=logging.getLogger(__name__),
+)
+
 app.config.suppress_callback_exceptions = True
 
 sidebar_style = {
@@ -71,4 +79,4 @@ def render_page_content(pathname):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=os.getenv('ENVIRONMENT', 'development') != 'production')

@@ -4,4 +4,5 @@ WORKDIR /home/practice
 ADD . .
 RUN pip3 install -r requirements.txt
 
+ENV ENVIRONMENT=production
 CMD ["python", "main.py"]
