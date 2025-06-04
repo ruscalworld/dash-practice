@@ -6,10 +6,26 @@ import pandas as pd
 logger = logging.Logger(__name__)
 
 logger.info('loading data')
+
+regions_mapping_df = pd.read_csv('data/regions.csv')
+regions_mapping_df.set_index('region', inplace=True)
+logger.info('loaded regions mapping')
+
 settlements_df = pd.read_csv('data/settlements.csv', sep=',')
 logger.info('loaded settlements data')
 
 settlements_df = settlements_df.groupby('region').agg('sum').reset_index('region')[['region', 'population']]
+
+settlements_df['region'] = settlements_df['region'].replace('Кабардино-Балкарская республика', 'Кабардино-Балкарская Республика')
+settlements_df['region'] = settlements_df['region'].replace('Карачаево-Черкесская республика', 'Карачаево-Черкесская Республика')
+settlements_df['region'] = settlements_df['region'].replace('Кемеровская область', 'Кемеровская область - Кузбасс')
+settlements_df['region'] = settlements_df['region'].replace('Республика Адыгея', 'Республика Адыгея (Адыгея)')
+settlements_df['region'] = settlements_df['region'].replace('Республика Северная Осетия - Алания', 'Республика Северная Осетия-Алания')
+settlements_df['region'] = settlements_df['region'].replace('Республика Татарстан', 'Республика Татарстан (Татарстан)')
+settlements_df['region'] = settlements_df['region'].replace('Удмуртская республика', 'Удмуртская Республика')
+settlements_df['region'] = settlements_df['region'].replace('Чеченская республика', 'Чеченская Республика')
+settlements_df['region'] = settlements_df['region'].replace('Чувашская республика', 'Чувашская Республика - Чувашия')
+
 settlements_df.set_index('region', inplace=True)
 logger.info('completed settlements preprocessing')
 
@@ -24,6 +40,7 @@ accidents_df['month'] = accidents_df.apply(lambda row: row['datetime'].month, ax
 accidents_df['hour'] = accidents_df.apply(lambda row: row['datetime'].hour, axis=1)
 accidents_df = accidents_df[accidents_df['year'] < 2024]
 accidents_df = accidents_df.join(settlements_df, on='region', how='left', rsuffix='_settlement')
+accidents_df = accidents_df.join(regions_mapping_df, on='region', how='left', rsuffix='_region')
 logger.info('completed accidents preprocessing')
 
 participants_df = pd.read_csv('data/participants.csv', sep=';')

@@ -60,23 +60,25 @@ def region_stats():
         orientation='h',
 
         labels={
-            'region': 'Регон',
+            'region': 'Регион',
             'count_per_population': 'Количество на 1000 чел.',
         }
     )
 
 
 def region_map():
-    absolute_accidents_df = accidents_df.value_counts(subset=['region', 'population']).reset_index(name='count')
+    absolute_accidents_df = (accidents_df.value_counts(subset=['region', 'cartodb_id', 'population'])
+                             .reset_index(name='count'))
+
     absolute_accidents_df['count_per_population'] = absolute_accidents_df['count'] / (absolute_accidents_df['population'] / 1000)
     logger.info('completed region map calculation')
 
     figure = px.choropleth(
-        absolute_accidents_df[['region', 'count_per_population']],
+        absolute_accidents_df[['region', 'cartodb_id', 'count_per_population']],
 
-        locations='region',
+        locations='cartodb_id',
         geojson=geojson,
-        featureidkey='properties.name',
+        featureidkey='properties.cartodb_id',
         color='count_per_population',
         fitbounds='geojson',
         projection='mercator',
@@ -84,9 +86,8 @@ def region_map():
         scope='asia',
         basemap_visible=False,
 
-
         labels={
-            'region': 'Регон',
+            'region': 'Регион',
             'count_per_population': 'Количество ДТП на 1000 чел.',
         }
     )
