@@ -28,6 +28,14 @@ layout = dbc.Container([
     ]),
 
     dbc.Row([
+        graph(
+            'Общие условия',
+            'При какой погоде и освещённости чаще всего происходят ДТП?',
+            dcc.Graph(id='conditions-summary'),
+        ),
+    ]),
+
+    dbc.Row([
         dbc.Col([
             graph(
                 'Время суток',
@@ -49,6 +57,7 @@ layout = dbc.Container([
 @callback(
     Output('weather-conditions', 'figure'),
     Output('light-conditions', 'figure'),
+    Output('conditions-summary', 'figure'),
     Output('day-time', 'figure'),
     Output('year-season', 'figure'),
     Input('crossfilter-region', 'value'),
@@ -95,6 +104,24 @@ def update_conditions(region):
 
     light_figure.update_layout(showlegend=False)
 
+    conditions_figure = px.scatter(
+        region_accidents_df
+        .value_counts(subset=['weather', 'light'])
+        .reset_index(name='count')
+        .sort_values('count', ascending=False)
+        .head(10),
+
+        x='weather',
+        y='light',
+        size='count',
+
+        labels={
+            'light': 'Освещение',
+            'weather': 'Погода',
+            'count': 'Количество ДТП',
+        }
+    )
+
     day_time_figure = px.bar(
         region_accidents_df
         .value_counts(subset=['hour'])
@@ -127,4 +154,4 @@ def update_conditions(region):
         }
     )
 
-    return weather_figure, light_figure, day_time_figure, months_figure
+    return weather_figure, light_figure, conditions_figure, day_time_figure, months_figure
